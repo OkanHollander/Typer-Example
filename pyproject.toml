@@ -1,13 +1,14 @@
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
+package = "weagle"
 
 [project]
 name = "weagle"
 version = "0.0.6"
 description = "A Test Tool"
 requires-python = ">=3.9"
-license = {text = "MIT"}
+license = { text = "MIT" }
 classifiers = [
     "Programming Language :: Python :: 3.9",
 ]
@@ -34,18 +35,18 @@ packages = ["weagle"]
 weagle = "weagle.main:app"
 
 [tool.setuptools.dynamic]
-readme = {file = ["README.md"]}
+readme = { file = ["README.md"] }
 
 [tool.ruff]
 line-length = 120
 # Enable Pyflakes `E` and `F` codes by default.
 select = [
-    "E",  # pycodestyle errors
-    "W",  # pycodestyle warnings
-    "F",  # pyflakes
-    "I",  # isort
-    "C",  # flake8-comprehensions
-    "B",  # flake8-bugbear
+    "E", # pycodestyle errors
+    "W", # pycodestyle warnings
+    "F", # pyflakes
+    "I", # isort
+    "C", # flake8-comprehensions
+    "B", # flake8-bugbear
 ]
 ignore = ["E501"]
 
@@ -75,7 +76,7 @@ exclude = [
     "node_modules",
     "venv",
 ]
-per-file-ignores = {}
+per-file-ignores = { }
 
 [tool.ruff.isort]
 known-third-party = ["typer", "python-dotenv"]
