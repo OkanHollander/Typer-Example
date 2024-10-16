@@ -1,7 +1,7 @@
 """WeaGLe CLI."""
 # ruff: noqa, B008, B006
 import os
-from shlex import shlex, split
+from shlex import split
 from subprocess import CompletedProcess
 from typing import Any, Optional
 from pathlib import Path
@@ -11,7 +11,6 @@ import typer
 import yaml
 import subprocess
 
-from ansible_collections.vmware.vmware_rest.manual.source.conf import project
 from rich.console import Console
 from rich.theme import Theme
 from typing_extensions import Annotated
@@ -389,4 +388,38 @@ def docker_stop(
         services=services if services else [],
         verbose=verbose,
         task_name="Stopping project",
+    )
+
+@docker_app.command(rich_help_panel="Docker Stack Management", name="exec")
+def docker_exec(
+        project: Annotated[
+            ProjectFolders,
+            typer.Option("--project", "-p", help="Project folder", envvar="PROJECT")
+        ],
+        service: Annotated[str, typer.Argument(help="Service to execute command")],
+        command: Annotated[str, typer.Argument(help="Command to execute")]= "bash",
+        verbose: Annotated[bool, typer.Option(help="Verbose Mode")] = False,
+):
+    """
+    Execute a command in a running container.
+
+    Args:
+        project (ProjectFolders): The project folder to execute the command in.
+        service (str): The service to execute the command in.
+        command (str): The command to execute.
+        verbose (bool, optional): Enable verbose mode. Defaults to False.
+
+    [u]Examples:[/u]
+
+    To execute a command in a service:
+        [i]weagle docker exec --project project_01 service_01 --command "ls -la"[/i]
+    """
+    console.log(f"Executing command: {command}", style="info")
+    run_docker_compose_cmd(
+        action="exec",
+        filename=Path(f"./projects/{project.value}/docker-compose.yml"),
+        services=[service],
+        command=command,
+        verbose=verbose,
+        task_name="Executing command",
     )
