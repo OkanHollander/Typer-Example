@@ -390,6 +390,7 @@ def docker_stop(
         task_name="Stopping project",
     )
 
+
 @docker_app.command(rich_help_panel="Docker Stack Management", name="exec")
 def docker_exec(
         project: Annotated[
@@ -397,7 +398,7 @@ def docker_exec(
             typer.Option("--project", "-p", help="Project folder", envvar="PROJECT")
         ],
         services: Annotated[str, typer.Argument(help="Service to execute command")],
-        command: Annotated[str, typer.Argument(help="Command to execute")]= "bash",
+        command: Annotated[str, typer.Argument(help="Command to execute")] = "bash",
         verbose: Annotated[bool, typer.Option(help="Verbose Mode")] = False,
 ):
     """
@@ -423,6 +424,7 @@ def docker_exec(
         verbose=verbose,
         task_name="Executing command",
     )
+
 
 @docker_app.command(rich_help_panel="Docker Stack Management", name="debug")
 def docker_debug(
@@ -488,4 +490,51 @@ def docker_restart(
         services=services if services else [],
         verbose=verbose,
         task_name="Restarting project",
+    )
+
+
+@docker_app.command(rich_help_panel="Docker Stack Management", name="logs")
+def docker_logs(
+        project: Annotated[
+            ProjectFolders,
+            typer.Option("--project", "-p", help="Project folder", envvar="PROJECT")
+        ],
+        services: Annotated[Optional[list[str]], typer.Argument(help="Services to get logs")] = None,
+        follow: Annotated[bool, typer.Option("--follow", "-f", help="Follow logs")] = False,
+        tail: Annotated[
+            int, typer.Option("--tail", "-t", help="Number of lines to show from the end of the logs")] = 100,
+        verbose: Annotated[bool, typer.Option(help="Verbose Mode")] = False,
+):
+    """
+    Get the logs of the specified Docker project and its services.
+
+    Args:
+        project (ProjectFolders): The project folder to get logs from.
+        services (Optional[list[str]], optional): List of services to get logs from. Defaults to None.
+        follow (bool, optional): Follow logs. Defaults to False.
+        tail (int, optional): Number of lines to show from the end of the logs. Defaults to 100.
+        verbose (bool, optional): Enable verbose mode. Defaults to False.
+
+    [u]Examples:[/u]
+
+    To get logs from all services:
+        [i]weagle docker logs --project project_01[/i]
+
+    To get logs from specific services:
+        [i]weagle docker logs service_01 --project project_01[/i]
+
+    """
+    console.log(f"Getting logs for project: {project}", style="info")
+    options = ""
+    if follow:
+        options += " -f"
+    if tail:
+        options += f" --tail={tail}"
+    run_docker_compose_cmd(
+        action="logs",
+        filename=Path(f"./projects/{project.value}/docker-compose.yml"),
+        services=services if services else [],
+        verbose=verbose,
+        task_name="Getting logs",
+        extra_options=options,
     )
