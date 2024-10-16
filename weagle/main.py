@@ -221,24 +221,6 @@ def run_docker_compose_cmd(
     """Run a docker compose command.
 
     Args:
-        filename (str): Docker compose file.
-        action (str): Docker compose action. Example 'up'
-        services (List[str], optional): List of services defined in the docker compose. Defaults to [].
-        verbose (int, optional): Execute verbose command. Defaults to 0.
-        command (str, optional): Docker compose command to send on action `exec`. Defaults to "".
-        extra_options (str, optional): Extra options to pass over docker compose command. Defaults to "".
-        envvars (dict, optional): Environment variables. Defaults to ENVVARS.
-        timeout (int, optional): Timeout in seconds. Defaults to None.
-        shell (bool, optional): Run the command in a shell. Defaults to False.
-        capture_output (bool, optional): Capture stdout and stderr. Defaults to True.
-        task_name (str, optional): Name of the task passed. Defaults to "".
-
-    Returns:
-        subprocess.CompletedProcess: Result of the command
-    """    """
-    Run a docker compose command.
-
-    Args:
         filename (Path): Path to the Docker compose file.
         action (str): Docker compose action to execute (e.g., 'up', 'down', 'build').
         services (list[str], optional): List of services to target. Defaults to an empty list.
