@@ -1,6 +1,6 @@
 import typer
-from .commands.docker_commands import docker_app as docker_commands
-from .commands.network_commands import network_app as network_commands
+from weagle.docker.commands.docker_commands import docker_app as docker_commands
+from weagle.docker.commands.network_commands import network_app as network_commands
 
 
 app = typer.Typer(rich_help_panel="WeaGLe CLI")

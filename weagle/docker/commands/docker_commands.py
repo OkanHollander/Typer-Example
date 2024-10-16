@@ -1,6 +1,6 @@
 import typer
-from weagle.models.project_folders import ProjectFolders
-from weagle.services.docker_service import DockerService
+from weagle.docker.models.project_folders import ProjectFolders
+from weagle.docker.services.docker_service import DockerService
 from typing import Optional, Annotated
 
 docker_app = typer.Typer(rich_help_panel="Docker Stack Management")

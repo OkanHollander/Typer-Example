@@ -1,5 +1,5 @@
 import typer
-from weagle.services.docker_service import DockerService
+from weagle.docker.services.docker_service import DockerService
 from typing import Annotated
 
 network_app = typer.Typer(rich_help_panel="Docker Network Management")
