@@ -648,3 +648,36 @@ def docker_rm(
         extra_options=extra_options,
         task_name="Removing containers(s)",
     )
+
+
+@docker_app.command(rich_help_panel="Docker Network Management", name="network")
+def docker_network(
+        action: Annotated[DockerNetworkAction, typer.Argument(..., help="Network action", case_sensitive=False)],
+        name: Annotated[str, typer.Option("--name", "-n", help="Network name")] = "weagle-network",
+        driver: Annotated[str, typer.Option(help="Network driver")] = "bridge",
+        subnet: Annotated[str, typer.Option(help="Network subnet")] = "192.168.1.0/24",
+        verbose: Annotated[bool, typer.Option(help="Verbose Mode")] = False,
+):
+    """
+    Manage Docker Networks.
+
+    Args:
+        action (DockerNetworkAction): Network action to perform.
+        name (str, optional): Network name. Defaults to "weagle-network".
+        driver (str, optional): Network driver. Defaults to "bridge".
+        subnet (str, optional): Network subnet. Defaults to "
+        verbose (bool, optional): Enable verbose mode. Defaults to False.
+    """
+    console.log(f"Performing action: {action}", style="info")
+    exec_cmd = f"docker network {action.value}"
+    if driver and action.value == "create":
+        exec_cmd += f" --driver {driver}"
+    if subnet and action.value == "create":
+        exec_cmd += f" --subnet {subnet}"
+    if action.value != 'ls' and action.value != 'prune':
+        exec_cmd += f" {name}"
+    run_cmd(
+        exec_cmd=exec_cmd,
+        task_name=f"Network {action.value}",
+    )
+
