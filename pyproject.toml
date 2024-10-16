@@ -31,7 +31,7 @@ dev = ["black", "flake8", "ruff", "pydocstyle"]
 packages = ["weagle"]
 
 [project.scripts]
-netobs = "weagle.main:app"
+weagle = "weagle.main:app"
 
 [tool.setuptools.dynamic]
 readme = {file = ["README.md"]}
