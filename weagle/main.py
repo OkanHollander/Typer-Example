@@ -236,6 +236,27 @@ def run_docker_compose_cmd(
 
     Returns:
         subprocess.CompletedProcess: Result of the command
+    """    """
+    Run a docker compose command.
+
+    Args:
+        filename (Path): Path to the Docker compose file.
+        action (str): Docker compose action to execute (e.g., 'up', 'down', 'build').
+        services (list[str], optional): List of services to target. Defaults to an empty list.
+        verbose (int, optional): Verbosity level. Defaults to 0.
+        command (str, optional): Additional command to execute with docker compose. Defaults to an empty string.
+        extra_options (str, optional): Extra options to pass to the docker compose command. Defaults to an empty string.
+        envvars (dict[str, Any], optional): Environment variables to set for the command. Defaults to ENVVARS.
+        timeout (Optional[int], optional): Timeout for the command in seconds. Defaults to None.
+        shell (bool, optional): Whether to use the shell as the program to execute. Defaults to False.
+        capture_output (bool, optional): Whether to capture the output of the command. Defaults to False.
+        task_name (str, optional): Name of the task for logging purposes. Defaults to an empty string.
+
+    Returns:
+        subprocess.CompletedProcess: The result of the executed command.
+
+    Raises:
+        typer.Exit: If the specified Docker compose file does not exist.
     """
     if not filename.exists():
         console.log(f"File not found: [orange1 i]{filename}", style="error")
@@ -272,6 +293,21 @@ def docker_build(
         services: Annotated[Optional[list[str]], typer.Argument(help="Services to build")] = None,
         verbose: Annotated[bool, typer.Option(help="Verbose Mode")] = False,
 ):
+    """
+    Build the specified Docker project and its services.
+
+    Args:
+        project (ProjectFolders): The project folder to build.
+        services (Optional[list[str]], optional): List of services to build. Defaults to None.
+        verbose (bool, optional): Enable verbose mode. Defaults to False.
+    [u]Examples:[/u]
+
+    To Build all services:
+        [i]weagle docker build --project project_01[/i]
+
+    To Build specific services:
+        [i]weagle docker build service_01 service_02 --project project_01 [/i]
+    """
     console.log(f"Building project: {project}", style="info")
     run_docker_compose_cmd(
         action="build",
@@ -292,6 +328,23 @@ def docker_start(
         verbose: Annotated[bool, typer.Option(help="Verbose Mode")] = False,
         detached: Annotated[bool, typer.Option("--detached", "-d", help="Detached Mode")] = False,
 ):
+    """
+        Start the specified Docker project and its services.
+
+    Args:
+        project (ProjectFolders): The project folder to start.
+        services (Optional[list[str]], optional): List of services to start. Defaults to None.
+        verbose (bool, optional): Enable verbose mode. Defaults to False.
+        detached (bool, optional): Run containers in detached mode. Defaults to False.
+
+    [u]Examples:[/u]
+
+    To start all services:
+        [i]weagle docker start --project project_01[/i]
+
+    To start specific services:
+        [i]weagle docker start service_01 --project project_01[/i]
+    """
     console.log(f"Starting project: {project}", style="info")
     run_docker_compose_cmd(
         action="up",
@@ -302,6 +355,7 @@ def docker_start(
         extra_options="-d" if detached else "",
     )
 
+
 @docker_app.command(rich_help_panel="Docker Stack Management", name="stop")
 def docker_stop(
         project: Annotated[
@@ -311,6 +365,23 @@ def docker_stop(
         services: Annotated[Optional[list[str]], typer.Argument(help="Services to stop")] = None,
         verbose: Annotated[bool, typer.Option(help="Verbose Mode")] = False,
 ):
+    """
+        Stop the specified Docker project and its services.
+
+        Args:
+            project (ProjectFolders): The project folder to stop.
+            services (Optional[list[str]], optional): List of services to stop. Defaults to None.
+            verbose (bool, optional): Enable verbose mode. Defaults to False.
+
+        [u]Examples:[/u]
+
+        To stop all services:
+            [i]weagle docker stop --project project_01[/i]
+
+        To stop specific services:
+            [i]weagle docker stop service_01 --project project_01[/i]
+
+        """
     console.log(f"Stopping project: {project}", style="info")
     run_docker_compose_cmd(
         action="stop",
