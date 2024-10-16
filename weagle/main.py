@@ -396,7 +396,7 @@ def docker_exec(
             ProjectFolders,
             typer.Option("--project", "-p", help="Project folder", envvar="PROJECT")
         ],
-        service: Annotated[str, typer.Argument(help="Service to execute command")],
+        services: Annotated[str, typer.Argument(help="Service to execute command")],
         command: Annotated[str, typer.Argument(help="Command to execute")]= "bash",
         verbose: Annotated[bool, typer.Option(help="Verbose Mode")] = False,
 ):
@@ -405,7 +405,7 @@ def docker_exec(
 
     Args:
         project (ProjectFolders): The project folder to execute the command in.
-        service (str): The service to execute the command in.
+        services (str): The service to execute the command in.
         command (str): The command to execute.
         verbose (bool, optional): Enable verbose mode. Defaults to False.
 
@@ -418,8 +418,39 @@ def docker_exec(
     run_docker_compose_cmd(
         action="exec",
         filename=Path(f"./projects/{project.value}/docker-compose.yml"),
-        services=[service],
+        services=[services],
         command=command,
         verbose=verbose,
         task_name="Executing command",
+    )
+
+@docker_app.command(rich_help_panel="Docker Stack Management", name="debug")
+def docker_debug(
+        project: Annotated[
+            ProjectFolders,
+            typer.Option("--project", "-p", help="Project folder", envvar="PROJECT")
+        ],
+        services: Annotated[Optional[list[str]], typer.Argument(help="Service to debug")],
+        verbose: Annotated[bool, typer.Option(help="Verbose Mode")] = False,
+):
+    """
+    Debug a service.
+
+    Args:
+        project (ProjectFolders): The project folder to debug.
+        services (str): The service to debug.
+        verbose (bool, optional): Enable verbose mode. Defaults to False.
+
+    [u]Examples:[/u]
+
+    To debug a service:
+        [i]weagle docker debug service_01 --project project_01[/i]
+    """
+    console.log(f"Debugging service: {services}", style="info")
+    run_docker_compose_cmd(
+        action="up",
+        filename=Path(f"./projects/{project.value}/docker-compose.yml"),
+        services=services if services else [],
+        verbose=verbose,
+        task_name="Debugging service",
     )
