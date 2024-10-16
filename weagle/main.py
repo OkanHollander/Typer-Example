@@ -520,3 +520,75 @@ def docker_logs(
         task_name="Getting logs",
         extra_options=options,
     )
+
+
+@docker_app.command(rich_help_panel="Docker Stack Management", name="ps")
+def docker_ps(
+        project: Annotated[
+            ProjectFolders,
+            typer.Option("--project", "-p", help="Project folder", envvar="PROJECT")
+        ],
+        services: Annotated[Optional[list[str]], typer.Argument(help="Services to list")] = None,
+        verbose: Annotated[bool, typer.Option(help="Verbose Mode")] = False,
+):
+    """
+    List the services of the specified Docker project.
+
+    Args:
+        project (ProjectFolders): The project folder to list services from.
+        services (Optional[list[str]], optional): List of services to list. Defaults to None.
+        verbose (bool, optional): Enable verbose mode. Defaults to False.
+
+    [u]Examples:[/u]
+
+    To list all services:
+        [i]weagle docker ps --project project_01[/i]
+
+    To list specific services:
+        [i]weagle docker ps service_01 --project project_01[/i]
+    """
+    console.log(f"Listing services for project: {project}", style="info")
+    run_docker_compose_cmd(
+        action="ps",
+        filename=Path(f"./projects/{project.value}/docker-compose.yml"),
+        services=services if services else [],
+        verbose=verbose,
+        task_name="Listing services",
+    )
+
+@docker_app.command(rich_help_panel="Docker Stack Management", name="destroy")
+def docker_destroy(
+        project: Annotated[
+            ProjectFolders,
+            typer.Option("--project", "-p", help="Project folder", envvar="PROJECT")
+        ],
+        services: Annotated[Optional[list[str]], typer.Argument(help="Services to destroy")] = None,
+        volumes: Annotated[bool, typer.Option(help="Remove volumes")] = False,
+        verbose: Annotated[bool, typer.Option(help="Verbose Mode")] = False,
+):
+    """
+    Destroy the specified Docker project and its services.
+
+    Args:
+        project (ProjectFolders): The project folder to destroy.
+        services (Optional[list[str]], optional): List of services to destroy. Defaults to None.
+        volumes (bool, optional): Remove volumes. Defaults to False.
+        verbose (bool, optional): Enable verbose mode. Defaults to False.
+
+    [u]Examples:[/u]
+
+    To destroy all services:
+        [i]weagle docker destroy --project project_01[/i]
+
+    To destroy specific services:
+        [i]weagle docker destroy service_01 --project project_01[/i]
+    """
+    console.log(f"Destroying project: {project}", style="info")
+    run_docker_compose_cmd(
+        action="down",
+        filename=Path(f"./projects/{project.value}/docker-compose.yml"),
+        services=services if services else [],
+        verbose=verbose,
+        extra_options="--volumes" if volumes else "",
+        task_name="Destroying project",
+    )
