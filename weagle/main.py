@@ -301,3 +301,21 @@ def docker_start(
         task_name="Starting project",
         extra_options="-d" if detached else "",
     )
+
+@docker_app.command(rich_help_panel="Docker Stack Management", name="stop")
+def docker_stop(
+        project: Annotated[
+            ProjectFolders,
+            typer.Option("--project", "-p", help="Project folder", envvar="PROJECT")
+        ],
+        services: Annotated[Optional[list[str]], typer.Argument(help="Services to stop")] = None,
+        verbose: Annotated[bool, typer.Option(help="Verbose Mode")] = False,
+):
+    console.log(f"Stopping project: {project}", style="info")
+    run_docker_compose_cmd(
+        action="stop",
+        filename=Path(f"./projects/{project.value}/docker-compose.yml"),
+        services=services if services else [],
+        verbose=verbose,
+        task_name="Stopping project",
+    )
