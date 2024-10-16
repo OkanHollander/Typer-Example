@@ -454,3 +454,38 @@ def docker_debug(
         verbose=verbose,
         task_name="Debugging service",
     )
+
+
+@docker_app.command(rich_help_panel="Docker Stack Management", name="restart")
+def docker_restart(
+        project: Annotated[
+            ProjectFolders,
+            typer.Option("--project", "-p", help="Project folder", envvar="PROJECT")
+        ],
+        services: Annotated[Optional[list[str]], typer.Argument(help="Services to restart")] = None,
+        verbose: Annotated[bool, typer.Option(help="Verbose Mode")] = False,
+):
+    """
+    Restart the specified Docker project and its services.
+
+    Args:
+        project (ProjectFolders): The project folder to restart.
+        services (Optional[list[str]], optional): List of services to restart. Defaults to None.
+        verbose (bool, optional): Enable verbose mode. Defaults to False.
+
+    [u]Examples:[/u]
+
+    To restart all services:
+        [i]weagle docker restart --project project_01[/i]
+
+    To restart specific services:
+        [i]weagle docker restart service_01 --project project_01[/i]
+    """
+    console.log(f"Restarting project: {project}", style="info")
+    run_docker_compose_cmd(
+        action="restart",
+        filename=Path(f"./projects/{project.value}/docker-compose.yml"),
+        services=services if services else [],
+        verbose=verbose,
+        task_name="Restarting project",
+    )
