@@ -556,6 +556,7 @@ def docker_ps(
         task_name="Listing services",
     )
 
+
 @docker_app.command(rich_help_panel="Docker Stack Management", name="destroy")
 def docker_destroy(
         project: Annotated[
@@ -591,4 +592,59 @@ def docker_destroy(
         verbose=verbose,
         extra_options="--volumes" if volumes else "",
         task_name="Destroying project",
+    )
+
+
+@docker_app.command(rich_help_panel="Docker Network Management", name="rm")
+def docker_rm(
+        project: Annotated[ProjectFolders, typer.Option("--project", "-p", help="Project folder", envvar="PROJECT")],
+        services: Annotated[Optional[list[str]], typer.Argument(help="Services to remove")] = None,
+        volumes: Annotated[bool, typer.Option(help="Remove volumes")] = False,
+        force: Annotated[bool, typer.Option(help="Force removal")] = False,
+        verbose: Annotated[bool, typer.Option(help="Verbose Mode")] = False,
+):
+    """
+    Remove a Docker Container.
+
+    Args:
+        project (str): Name of the project.
+        services (Optional[list[str]], optional): List of services to remove. Defaults to None.
+        volumes (bool, optional): Remove volumes. Defaults to False.
+        force (bool, optional): Force removal. Defaults to
+        verbose (bool, optional): Enable verbose mode. Defaults to False.
+
+[u]Example:[/u]
+
+    To remove all services:
+        [i]weagle docker rm --scenario batteries-included[/i]
+
+    To remove a specific service:
+        [i]weagle docker rm telegraf-01 --scenario batteries-included[/i]
+
+    To remove a specific service and remove volumes:
+        [i]weagle docker rm telegraf-01 --volumes --scenario batteries-included[/i]
+
+    To remove all services and remove volumes:
+        [i]weagle docker rm --volumes --scenario batteries-included[/i]
+
+    To remove all services and force removal of containers:
+        [i]weagle docker rm --force --scenario batteries-included[/i]
+
+    To force removal of a specific service and remove volumes:
+        [i]weagle docker rm telegraf-01 --volumes --force --scenario batteries-included[/i]
+    """
+    console.log(f"Removing service(s): {services}", style="info")
+    extra_options = "--stop"
+    if force:
+        extra_options += " --force"
+    if volumes:
+        extra_options += " --volumes"
+    console.log(f"Extra options: {extra_options}", style="info")
+    run_docker_compose_cmd(
+        action="rm",
+        filename=Path(f"./projects/{project.value}/docker-compose.yml"),
+        services=services if services else [],
+        verbose=verbose,
+        extra_options=extra_options,
+        task_name="Removing containers(s)",
     )
