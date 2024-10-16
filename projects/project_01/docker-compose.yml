@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  web:
+    image: nginx:latest
+    container_name: web
+    ports:
+      - "80:80"
+    volumes:
+      - ./web:/usr/share/nginx/html
+    depends_on:
+      - app
+
+  app:
+    image: python:3.11
+    container_name: app
+    volumes:
+      - ./app:/app
+    working_dir: /app
+    command: python app.py
+    depends_on:
+      - db
+
+  db:
+    image: postgres:latest
+    container_name: db
+    environment:
+      POSTGRES_USER: exampleuser
+      POSTGRES_PASSWORD: examplepass
+      POSTGRES_DB: exampledb
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:
